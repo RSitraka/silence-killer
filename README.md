@@ -1,137 +1,113 @@
 # Clin d'Œil Assassin 😉🥷
 
-Jeu de société en groupe pour Android, **100 % hors ligne**, entièrement en français.
-Les joueurs se passent un seul téléphone pour découvrir leur rôle en secret, puis le posent
-au centre : pendant la partie, personne ne parle… on se regarde seulement.
+Jeu de société en groupe, entièrement en français : les joueurs se passent **un seul
+téléphone** pour découvrir leur rôle en secret (Citoyen ou Assassin), puis jouent
+**sans parler**, à coups de clins d'œil.
 
-## Structure du projet
+Le dépôt contient deux applications indépendantes, avec deux stacks distinctes :
 
 ```
 .
-├── pubspec.yaml                 # dépendances, polices, sons, config de l'icône
-├── analysis_options.yaml
-├── assets/
-│   ├── fonts/Fredoka-*.ttf      # police ronde Fredoka (licence SIL OFL, voir OFL.txt)
-│   ├── icon/icon.png            # icône de l'application (1024×1024)
-│   ├── icon/icon_foreground.png # premier plan de l'icône adaptative Android
-│   └── sounds/*.wav             # petits sons synthétisés (tap, révélation, tambour…)
-├── tool/generate_assets.py      # script qui (re)génère sons, icône et polices
-├── lib/
-│   ├── main.dart                # point d'entrée : portrait, Provider, thème
-│   ├── theme.dart               # palette pastel + thème Material
-│   ├── models/player.dart       # Player + enum Role
-│   ├── logic/victory.dart       # ★ RÈGLES DE VICTOIRE (fonctions séparées, faciles à modifier)
-│   ├── state/game_state.dart    # état de la partie (ChangeNotifier)
-│   ├── services/sound_service.dart  # sons + bouton « couper le son » (mémorisé)
-│   ├── widgets/
-│   │   ├── role_icons.dart      # icônes Citoyen / Assassin / fantôme / avatars (CustomPainter)
-│   │   └── common.dart          # gros boutons, rebonds, confettis, sélecteur −/+
-│   └── screens/
-│       ├── home_screen.dart         # accueil : « Comment jouer ? » / « Jouer »
-│       ├── tutorial_screen.dart     # tutoriel en 7 pages (PageView + points)
-│       ├── setup_screen.dart        # étape A : joueurs, prénoms, assassins
-│       ├── distribution_screen.dart # étape B : distribution secrète des rôles
-│       ├── game_screen.dart         # étape C : partie (cartes, Mort/Vivant, victoire)
-│       ├── accuse_screen.dart       # « J'accuse ! » : accusateur, accusé, tambour, révélation
-│       └── end_screen.dart          # étape D : confettis + rôles de tous
-├── test/victory_test.dart       # tests des règles de victoire et de l'état
-└── android/                     # projet Android généré par Flutter (portrait, nom de l'appli)
+├── mobile/        # Application Android — Flutter / Dart  → APK
+├── web/           # Application web — React + TypeScript + Vite (PWA)  → Netlify
+├── netlify.toml   # Déploiement Netlify (ne construit que web/)
+└── README.md
 ```
 
-## Points importants
+| | `mobile/` | `web/` |
+|---|---|---|
+| Langage | Dart | TypeScript |
+| Interface | Flutter (CustomPainter) | React + CSS, icônes en SVG |
+| Hors ligne | oui (tout est dans l'APK) | oui, après la 1re visite (service worker) |
+| Écran allumé | `wakelock_plus` | API Screen Wake Lock |
+| Tests | `flutter test` | `npm test` (Vitest) |
+| Livrable | `app-release.apk` | site statique `web/dist/` |
 
-- **Icônes très distinctes** (forme ET couleur, lisibles pour les daltoniens) :
-  Citoyen = **rond** bleu ciel/vert, souriant avec un cœur ;
-  Assassin = **étoile pointue** violet/rouge, ninja qui fait un clin d'œil.
-  Tout est dessiné avec `CustomPainter` — aucune image sous droits d'auteur.
-- **Secret des rôles** : bouton retour bloqué pendant la distribution, rôle caché dès
-  qu'on appuie sur « J'ai retenu, cacher » ou si l'application passe en arrière-plan,
-  écran neutre entre deux joueurs. Pendant la partie, les rôles ne sont jamais affichés.
-- **Victoire** (`lib/logic/victory.dart`) :
-  citoyens = plus aucun assassin vivant ; assassins = citoyens vivants ≤ assassins vivants + 1.
-  Le nombre maximal d'assassins se calcule à partir de cette même règle : strictement moins
-  de la moitié des joueurs **et** pas de victoire immédiate des assassins au départ
-  (ex. 5 joueurs → 1 assassin maximum, sinon 3 citoyens contre 2 assassins = victoire immédiate).
-- **Police** : la demande mentionnait `google_fonts`, mais ce paquet télécharge les polices
-  sur Internet au premier lancement. Pour un jeu **hors ligne**, Fredoka est donc embarquée
-  directement dans l'APK (même police, même rendu, aucun réseau nécessaire).
-- Écran maintenu allumé pendant la distribution et la partie (`wakelock_plus`),
-  orientation portrait uniquement, confirmation avant de quitter une partie en cours.
+Les deux versions ont les mêmes règles, les mêmes écrans, les mêmes icônes, la même
+police (Fredoka, embarquée) et les mêmes sons. Les règles de victoire sont isolées
+dans un seul fichier par application, facile à modifier :
+[`mobile/lib/logic/victory.dart`](mobile/lib/logic/victory.dart) et
+[`web/src/logic/game.ts`](web/src/logic/game.ts).
 
-## Générer l'APK pas à pas
+## Application mobile (Android)
 
-### 1. Installer les outils (une seule fois)
-
-1. **Flutter** (version stable) : <https://docs.flutter.dev/get-started/install>
-   puis vérifier avec `flutter --version`.
-2. **Android Studio** (ou seulement les « command-line tools » Android) :
-   <https://developer.android.com/studio>. Dans le SDK Manager, installer
-   *Android SDK Platform*, *Build-Tools* et *Platform-Tools*.
-3. Un **JDK 17** (fourni avec Android Studio).
-4. Accepter les licences Android :
-   ```bash
-   flutter doctor --android-licenses
-   ```
-5. Vérifier que tout est vert pour Android :
-   ```bash
-   flutter doctor
-   ```
-
-### 2. Récupérer les dépendances
-
-Dans le dossier du projet :
+Voir [`mobile/README.md`](mobile/README.md). En bref :
 
 ```bash
+cd mobile
 flutter pub get
-```
-
-### 3. (Facultatif) Regénérer les ressources
-
-Les sons, l'icône et les polices sont déjà fournis dans `assets/`. Pour les regénérer :
-
-```bash
-pip install pillow fonttools
-python tool/generate_assets.py
-dart run flutter_launcher_icons     # recopie l'icône dans android/app/src/main/res
-```
-
-### 4. Lancer les tests (facultatif)
-
-```bash
-flutter test
-```
-
-### 5. Compiler l'APK
-
-```bash
 flutter build apk --release
+# → mobile/build/app/outputs/flutter-apk/app-release.apk
 ```
 
-L'APK se trouve ici (compatible Android 7.0 et plus récent) :
+## Application web
+
+Prérequis : **Node.js 20 ou plus récent**.
+
+```bash
+cd web
+npm install
+npm run dev       # développement : http://localhost:5173
+npm test          # tests des règles
+npm run build     # version de production dans web/dist/
+npm run preview   # tester la version de production : http://localhost:4173
+```
+
+Sur téléphone, le site peut être **ajouté à l'écran d'accueil** (« Installer l'application »
+dans Chrome, « Sur l'écran d'accueil » dans Safari) : il s'ouvre alors en plein écran,
+comme une vraie appli, et fonctionne sans connexion.
+
+### Organisation du code web
 
 ```
-build/app/outputs/flutter-apk/app-release.apk
+web/
+├── index.html
+├── vite.config.ts            # Vite + PWA (manifeste, service worker hors ligne)
+├── public/
+│   ├── fonts/                # Fredoka (licence SIL OFL)
+│   ├── sounds/               # petits sons .wav
+│   └── icons/                # icônes PWA + favicon
+└── src/
+    ├── main.tsx              # point d'entrée
+    ├── App.tsx               # enchaînement des écrans + bouton « retour » du navigateur
+    ├── styles.css            # thème pastel, gros boutons, animations
+    ├── logic/game.ts         # ★ règles du jeu (fonctions pures) + game.test.ts
+    ├── hooks/
+    │   ├── sound.tsx         # sons + bouton « couper le son » (mémorisé)
+    │   └── browser.ts        # écran allumé, retour bloqué, confirmation de sortie
+    ├── components/
+    │   ├── Icons.tsx         # Citoyen / Assassin / fantôme / avatars en SVG
+    │   └── ui.tsx            # boutons, sélecteur −/+, fenêtres, confettis
+    └── screens/              # Accueil, Tutoriel, Préparation, Distribution,
+                              # Partie, Accusation, Fin de partie
 ```
 
-Astuce : `flutter build apk --release --split-per-abi` produit des APK plus légers,
-un par type de processeur (`app-arm64-v8a-release.apk` convient à la quasi-totalité
-des téléphones récents).
+Spécificités du navigateur :
+- le bouton / geste **retour** du navigateur est intercepté : bloqué pendant la
+  distribution des rôles, confirmation pour quitter pendant la partie ;
+- fermer ou recharger l'onglet pendant une partie demande confirmation ;
+- un rôle affiché est caché immédiatement si l'onglet passe en arrière-plan.
 
-### 6. Installer sur le téléphone
+## Déployer la version web sur Netlify
 
-- Par câble USB (débogage USB activé) : `flutter install` ou
-  `adb install build/app/outputs/flutter-apk/app-release.apk`
-- Ou copier le fichier `.apk` sur le téléphone et l'ouvrir
-  (autoriser « Installer des applications inconnues »).
+Le fichier [`netlify.toml`](netlify.toml) contient déjà tout le réglage
+(dossier `web/`, commande `npm run build`, dossier publié `dist/`, Node 20,
+redirection d'application monopage). Deux façons de faire :
 
-### 7. (Pour publier sur le Play Store) Signer avec votre propre clé
+**A. Depuis GitHub (recommandé — chaque `git push` redéploie le site)**
 
-Par défaut, l'APK de release est signé avec la clé de débogage : parfait pour jouer
-entre amis, mais pas pour le Play Store. Suivez alors
-<https://docs.flutter.dev/deployment/android#signing-the-app>.
+1. Pousser le dépôt sur GitHub.
+2. Sur <https://app.netlify.com> : **Add new site → Import an existing project → GitHub**,
+   puis choisir ce dépôt.
+3. Netlify lit `netlify.toml` : ne rien changer, cliquer sur **Deploy**.
+4. (Facultatif) **Site configuration → Change site name** pour une adresse comme
+   `clin-doeil-assassin.netlify.app`.
 
-## Modifier les règles
+**B. En ligne de commande**
 
-Ouvrez `lib/logic/victory.dart` et changez `assassinsHaveWon` (ou `citizensHaveWon`).
-Le nombre maximal d'assassins proposé à la configuration s'adapte automatiquement.
-Relancez `flutter test` pour vérifier (adaptez les tests si vous changez la règle).
+```bash
+npm install -g netlify-cli
+netlify login                 # ouvre le navigateur une seule fois
+netlify init                  # crée / relie le site (depuis la racine du dépôt)
+netlify deploy --build --prod
+```

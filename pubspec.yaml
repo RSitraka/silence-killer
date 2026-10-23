@@ -1,0 +1,59 @@
+name: clin_doeil_assassin
+description: "Clin d'Œil Assassin — jeu de société en groupe, 100 % hors ligne, sur un seul téléphone."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  # Textes système (copier/coller, etc.) en français.
+  flutter_localizations:
+    sdk: flutter
+  # Gestion d'état simple (ChangeNotifier).
+  provider: ^6.1.2
+  # Garde l'écran allumé pendant la distribution et la partie.
+  wakelock_plus: ^1.2.8
+  # Petits effets sonores (fichiers .wav embarqués, donc hors ligne).
+  audioplayers: ^6.1.0
+  # Mémorise le réglage « son coupé ».
+  shared_preferences: ^2.3.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  # Génère les icônes Android à partir de assets/icon/icon.png.
+  flutter_launcher_icons: ^0.14.1
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/sounds/
+
+  # Police « Fredoka » (licence SIL OFL) embarquée dans l'APK :
+  # contrairement au chargement réseau de google_fonts, elle fonctionne hors ligne.
+  fonts:
+    - family: Fredoka
+      fonts:
+        - asset: assets/fonts/Fredoka-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Fredoka-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Fredoka-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Fredoka-Bold.ttf
+          weight: 700
+
+# Configuration de flutter_launcher_icons :
+#   dart run flutter_launcher_icons
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/icon/icon.png"
+  adaptive_icon_background: "#FFE8F1"
+  adaptive_icon_foreground: "assets/icon/icon_foreground.png"
+  min_sdk_android: 21

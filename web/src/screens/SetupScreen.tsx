@@ -148,9 +148,9 @@ export function SetupScreen({
             </div>
           </div>
         </Card>
-      </div>
-      <div className="bottom">
-        <BigButton label="Distribuer les rôles" emoji="🃏" color="var(--pink)" onClick={distribute} />
+        <div className="actions">
+          <BigButton label="Distribuer les rôles" emoji="🃏" color="var(--pink)" onClick={distribute} />
+        </div>
       </div>
       {toast && <Toast message={toast} onDone={clearToast} />}
     </section>

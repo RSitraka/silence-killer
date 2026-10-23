@@ -77,6 +77,16 @@ export function GameScreen({
         </span>
       </div>
       <p className="hint center">Touchez un joueur pour le déclarer mort ou vivant</p>
+      <div className="actions">
+        <BigButton
+          label="J'accuse !"
+          emoji="✋"
+          size="lg"
+          color="var(--coral)"
+          disabled={alive < 2}
+          onClick={() => setAccusing(true)}
+        />
+      </div>
 
       <div className="scroll">
         <ul className="player-grid">
@@ -99,17 +109,6 @@ export function GameScreen({
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="bottom">
-        <BigButton
-          label="J'accuse !"
-          emoji="✋"
-          size="lg"
-          color="var(--coral)"
-          disabled={alive < 2}
-          onClick={() => setAccusing(true)}
-        />
       </div>
 
       {editing !== null && (

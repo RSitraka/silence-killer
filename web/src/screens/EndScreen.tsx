@@ -43,8 +43,12 @@ export function EndScreen({
           <br />
           ont gagné ! 🎉
         </h1>
-        <p className="hint strong">Voici les rôles de chacun :</p>
       </div>
+      <div className="actions">
+        <BigButton label="Rejouer avec les mêmes joueurs" emoji="🔄" size="sm" color="var(--pink)" onClick={onReplay} />
+        <BigButton label="Retour à l'accueil" emoji="🏠" size="sm" color="var(--sky)" onClick={onHome} />
+      </div>
+      <p className="hint strong center">Voici les rôles de chacun :</p>
       <div className="scroll">
         <ul className="role-list">
           {sorted.map((p) => (
@@ -64,10 +68,6 @@ export function EndScreen({
             </li>
           ))}
         </ul>
-      </div>
-      <div className="bottom stack">
-        <BigButton label="Rejouer avec les mêmes joueurs" emoji="🔄" size="sm" color="var(--pink)" onClick={onReplay} />
-        <BigButton label="Retour à l'accueil" emoji="🏠" size="sm" color="var(--sky)" onClick={onHome} />
       </div>
     </section>
   );

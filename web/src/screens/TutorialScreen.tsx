@@ -93,7 +93,7 @@ const PAGES: Page[] = [
         <br />
         <br />
         La victime doit attendre 2 secondes avant d'annoncer qu'elle est morte, pour ne pas trahir l'assassin trop
-        vite. On la marque ensuite « Mort 💀 » dans l'appli.
+        vite. On la marque ensuite « Mort 💀 » dans l'appli.
       </>
     ),
   },
@@ -110,7 +110,7 @@ const PAGES: Page[] = [
         Si un joueur soupçonne quelqu'un, il lève la main.
         <br />
         <br />
-        Les autres joueurs doivent valider qu'on peut passer au vote. On appuie alors sur « J'accuse ! ✋ ».
+        Les autres joueurs doivent valider qu'on peut passer au vote. On appuie alors sur « J'accuse ! ✋ ».
       </>
     ),
   },
@@ -169,7 +169,6 @@ const PAGES: Page[] = [
 export function TutorialScreen({ onDone, onBack }: { onDone: () => void; onBack: () => void }) {
   const [page, setPage] = useState(0);
   const track = useRef<HTMLDivElement>(null);
-  const isLast = page === PAGES.length - 1;
 
   useBack(onBack);
 
@@ -188,23 +187,6 @@ export function TutorialScreen({ onDone, onBack }: { onDone: () => void; onBack:
           </button>
         }
       />
-      <div
-        ref={track}
-        className="pager"
-        onScroll={(e) => {
-          const el = e.currentTarget;
-          const i = Math.round(el.scrollLeft / el.clientWidth);
-          if (i !== page) setPage(i);
-        }}
-      >
-        {PAGES.map((p) => (
-          <article key={p.title} className="pager__page">
-            <div className="tuto-illustration">{p.illustration}</div>
-            <h2 className="tuto-title">{p.title}</h2>
-            <Card className="tuto-text">{p.text}</Card>
-          </article>
-        ))}
-      </div>
       <div className="dots" role="tablist" aria-label="Pages du tutoriel">
         {PAGES.map((p, i) => (
           <button
@@ -218,13 +200,34 @@ export function TutorialScreen({ onDone, onBack }: { onDone: () => void; onBack:
           />
         ))}
       </div>
-      <div className="bottom">
-        <BigButton
-          label={isLast ? "J'ai compris, on joue !" : 'Suivant'}
-          emoji={isLast ? '🎉' : '👉'}
-          color={isLast ? 'var(--pink)' : 'var(--lavender)'}
-          onClick={() => (isLast ? onDone() : goTo(page + 1))}
-        />
+      <div
+        ref={track}
+        className="pager"
+        onScroll={(e) => {
+          const el = e.currentTarget;
+          const i = Math.round(el.scrollLeft / el.clientWidth);
+          if (i !== page) setPage(i);
+        }}
+      >
+        {PAGES.map((p, i) => {
+          const last = i === PAGES.length - 1;
+          return (
+            <article key={p.title} className="pager__page">
+              <div className="tuto-illustration">{p.illustration}</div>
+              <h2 className="tuto-title">{p.title}</h2>
+              <Card className="tuto-text">{p.text}</Card>
+              {/* Le bouton suit directement le texte : il reste au milieu de l'écran. */}
+              <div className="actions">
+                <BigButton
+                  label={last ? "J'ai compris, on joue !" : 'Suivant'}
+                  emoji={last ? '🎉' : '👉'}
+                  color={last ? 'var(--pink)' : 'var(--lavender)'}
+                  onClick={() => (last ? onDone() : goTo(i + 1))}
+                />
+              </div>
+            </article>
+          );
+        })}
       </div>
     </section>
   );

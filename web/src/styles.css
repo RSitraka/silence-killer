@@ -70,7 +70,8 @@ ul { list-style: none; margin: 0; padding: 0; }
 .end--assassins { background: linear-gradient(#E9DDFF, #FFDDE5 45%, var(--background)); }
 
 .scroll { flex: 1; overflow-y: auto; padding: 8px 16px 16px; display: flex; flex-direction: column; gap: 16px; overscroll-behavior: contain; }
-.bottom { padding: 8px 16px calc(16px + env(safe-area-inset-bottom)); }
+/* --host-badge : place réservée au badge de l'hébergeur (voir main.tsx). */
+.bottom { padding: 8px 16px calc(16px + env(safe-area-inset-bottom) + var(--host-badge, 0px)); }
 .stack { display: flex; flex-direction: column; gap: 14px; width: 100%; }
 .bottom.stack { gap: 10px; }
 .row { display: flex; align-items: center; justify-content: center; gap: 8px; }
@@ -136,7 +137,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .card-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
 
 /* ---- Accueil ---- */
-.screen__center { flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 28px 24px; }
+.screen__center { flex: 1; overflow-y: auto; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 0 28px calc(24px + var(--host-badge, 0px)); }
 .home-icons { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
 .home-title { font-size: 48px; line-height: 1.05; font-weight: 700; text-align: center; color: var(--assassin-purple); }
 
@@ -178,7 +179,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .counts > div { display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 20px; }
 
 /* ---- Distribution ---- */
-.frame { flex: 1; display: flex; flex-direction: column; padding: 24px 24px calc(16px + env(safe-area-inset-bottom)); min-height: 0; }
+.frame { flex: 1; display: flex; flex-direction: column; padding: 24px 24px calc(16px + env(safe-area-inset-bottom) + var(--host-badge, 0px)); min-height: 0; }
 .frame__body { flex: 1; overflow-y: auto; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; }
 
 /* ---- Partie ---- */
@@ -236,12 +237,12 @@ ul { list-style: none; margin: 0; padding: 0; }
 .role-tile__status { font-size: 28px; }
 
 /* ---- Modales, toasts, confettis ---- */
-.modal { position: fixed; inset: 0; z-index: 10; background: rgb(46 26 85 / 0.45); display: grid; place-items: center; padding: 24px; }
-.modal__box { width: 100%; max-width: 420px; max-height: 90dvh; overflow-y: auto; background: #fff; border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; align-items: stretch; gap: 14px; text-align: center; }
+.modal { position: fixed; inset: 0; z-index: 10; background: rgb(46 26 85 / 0.45); display: grid; place-items: center; padding: 24px 24px calc(24px + var(--host-badge, 0px)); }
+.modal__box { width: 100%; max-width: 420px; max-height: calc(100dvh - 48px - var(--host-badge, 0px)); overflow-y: auto; background: #fff; border-radius: var(--radius); padding: 24px; display: flex; flex-direction: column; align-items: stretch; gap: 14px; text-align: center; }
 .modal__box .text-btn { align-self: center; }
 .modal__title { font-size: 28px; font-weight: 700; text-align: center; overflow-wrap: anywhere; }
 .toast {
-  position: fixed; left: 50%; bottom: calc(110px + env(safe-area-inset-bottom)); transform: translateX(-50%);
+  position: fixed; left: 50%; bottom: calc(110px + env(safe-area-inset-bottom) + var(--host-badge, 0px)); transform: translateX(-50%);
   z-index: 20; width: max-content; max-width: calc(100vw - 32px);
   background: var(--ink); color: #fff; padding: 12px 20px; border-radius: 20px; font-size: 17px;
   animation: fade-in 0.25s;
